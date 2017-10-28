@@ -6,18 +6,27 @@
 
 int xPos = 300, yPos = 200; // kite coordinates
 int kiteTailAnim = 0;
-boolean kiteTailAnimReverse;
+boolean startAnim = false, kiteTailAnimReverse;
 String kiteColor = "ffffffff";
+
+PFont font, smallFont;
 
 void setup() {
   size(500, 500); // screen size
   frameRate(24);
+  String[] fontList = PFont.list();
+  font = createFont(fontList[0], 50);
+  smallFont = createFont(fontList[0], 25);
 }
 
 void draw() {
+  if(!startAnim)
+    drawStartScreen();
+  else {
     background(255); // white background
     drawKite();
     drawKiteTail();
+  }
 }
 
 /**
@@ -145,4 +154,21 @@ void keyPressed() {
     kiteColor = "ff00ff00";
   else if(key == 'B' || key == 'b')
     kiteColor = "ff0000ff";
+    
+  // navigate away from start screen
+  if(key == 'S' || key == 's')
+    startAnim = true;
+}
+
+void drawStartScreen() {
+  background(255);
+  textFont(font);
+  textAlign(CENTER);
+  fill(0);
+  text("Interactive Kite Animation", width/2, 150);
+  text("Press 'S' to start", width/2, 400);
+  
+  textFont(smallFont);
+  text("Use the arrow keys to move the kite.", width/2, 250);
+  text("Press 'R', 'G', or 'B' to change the color of the kite.", width/2, 280);
 }
