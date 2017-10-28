@@ -5,6 +5,7 @@
  */
 
 int xPos = 300, yPos = 200; // kite coordinates
+String kiteColor = "ffffffff";
 
 void setup() {
   size(500, 500); // screen size
@@ -21,7 +22,10 @@ void draw() {
 void drawKite() {
   // kite
   strokeWeight(3); // thicker outline for kite
+  fill(unhex(kiteColor)); // convert string representation of hexadecimal 
+                          // number to equivalent integer value
   quad(xPos, yPos, xPos-50, yPos-70, xPos, yPos-140, xPos+50, yPos-70);
+  noFill();
   
   // kite frame
   strokeWeight(2);
@@ -46,5 +50,10 @@ void keyPressed() {
     xPos += 2;
   
   // kite color change keys
-  
+  if(key == 'R' || key == 'r')
+    kiteColor = "ffff0000";
+  else if(key == 'G' || key == 'g')
+    kiteColor = "ff00ff00";
+  else if(key == 'B' || key == 'b')
+    kiteColor = "ff0000ff";
 }
