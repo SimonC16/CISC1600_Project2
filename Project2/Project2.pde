@@ -24,7 +24,7 @@ PFont font, smallFont;
 
 void setup() {
   size(500, 500); // screen size
-  frameRate(24);
+  frameRate(24); // set lower frame rate to smooth out animation
   String[] fontList = PFont.list();
   font = createFont(fontList[0], 50);
   smallFont = createFont(fontList[0], 25);
@@ -61,8 +61,9 @@ void draw() {
  * Draws individual parts of a kite.
  */
 void drawKite() {
-  // kite
+  // kite itself
   strokeWeight(3); // thicker outline for kite
+  stroke(130);
   fill(unhex(kiteColor)); // convert string representation of hexadecimal 
                           // number to equivalent integer value
   quad(xPos, yPos, xPos-50, yPos-70, xPos, yPos-140, xPos+50, yPos-70);
@@ -70,9 +71,9 @@ void drawKite() {
   
   // kite frame
   strokeWeight(2);
+  stroke(130);
   line(xPos, yPos, xPos, yPos-140); // vertical frame
   line(xPos-50, yPos-70, xPos+50, yPos-70); // horiztonal frame
-
   // kite line using a bezier curve
   strokeWeight(1); // thinner line for kite line
   bezier(xPos, yPos, xPos-30, yPos+170, xPos-160, yPos+70, 0, 500);
@@ -80,6 +81,9 @@ void drawKite() {
 
 // TODO: kite tail that reacts to user movement
 // (ie. flows to right when kite moves left and vice-versa)
+/**
+ * Draws animated kite tails.
+ */
 void drawKiteTail() {
   strokeWeight(2);
   if(kiteTailAnim == 0) {
@@ -159,7 +163,7 @@ void drawKiteTail() {
     ellipse(xPos+170, yPos+30, 10, 10);
     ellipse(xPos+165, yPos+15, 10, 10);
     noFill();
-    kiteTailAnimReverse = true;
+    kiteTailAnimReverse = true; // set to true to reverse the animation
     kiteTailAnim -= 1;
   }
 }
@@ -256,6 +260,7 @@ void star(float x, float y, float radius1, float radius2, int npoints) {
   }
   endShape(CLOSE);
 }
+
 void keyPressed() {
   // kite movement keys
   if(keyCode == UP)
@@ -267,17 +272,17 @@ void keyPressed() {
   else if(keyCode == RIGHT)
     xPos += 2;
   
-  // kite color change keys
+  // kite color changing keys
   if(key == 'R' || key == 'r')
-    kiteColor = "ffff0000";
+    kiteColor = "ffff0000"; // r for red
   else if(key == 'G' || key == 'g')
-    kiteColor = "ff00ff00";
+    kiteColor = "ff00ff00"; // g for green
   else if(key == 'B' || key == 'b')
-    kiteColor = "ff0000ff";
+    kiteColor = "ff0000ff"; // b for blue
     
   // navigate away from start screen
   if(key == 'S' || key == 's')
-    startAnim = true;
+    startAnim = true; // s for start
 }
 
 void mousePressed() {
@@ -302,9 +307,11 @@ void drawStartScreen() {
   textAlign(CENTER);
   fill(0);
   text("Interactive Kite Animation", width/2, 150);
-  text("Press 'S' to start", width/2, 400);
+  text("Press 'S' to start", width/2, 420);
   
   textFont(smallFont);
-  text("Use the arrow keys to move the kite.", width/2, 250);
-  text("Press 'R', 'G', or 'B' to change the color of the kite.", width/2, 280);
+  text("Use the arrow keys to move the kite.", width/2, 220);
+  text("Press 'R', 'G', or 'B' to change the color of the kite.", width/2, 250);
+  text("Click the left mouse button to cycle", width/2, 280);
+  text("through the day and night cycle.", width/2, 310);
 }
