@@ -4,10 +4,13 @@
  * CISC 1600
  */
 
-int xPos = 300, yPos = 200; // kite coordinates
-int kiteTailAnim = 0;
+int xPos = 300, yPos = 200; // kite initial coordinates
+int cloudXPos = -70, cloudYPos = 95; // cloud initial coordinates
+int cloudColor = 255; // cloud initial color, changes based on time of day
+int kiteTailAnim = 0; // frame # the kite tail animation is on
 boolean startAnim = false, kiteTailAnimReverse;
-String kiteColor = "ffffffff";
+String kiteColor = "ffffffff";  // kite color, stored in string to easily change value
+                                // can be converted using unhex() and used in stroke(), fill(), etc
 boolean morning = true;
 boolean animateSunOrMoon = false;
 boolean rising = false;
@@ -25,9 +28,9 @@ PFont font, smallFont;
 void setup() {
   size(500, 500); // screen size
   frameRate(24); // set lower frame rate to smooth out animation
-  String[] fontList = PFont.list();
-  font = createFont(fontList[0], 50);
-  smallFont = createFont(fontList[0], 25);
+  String[] fontList = PFont.list(); // get list of fonts from the OS
+  font = createFont(fontList[0], 50); // create a font using first in list, font size 50
+  smallFont = createFont(fontList[0], 25); // create a font using first in list, font size 25
   center = new PVector(500,500);
   point = new PVector(25,525);
   //find the angle between the points
@@ -36,20 +39,33 @@ void setup() {
 
 void draw() {
   if(!startAnim)
-    drawStartScreen();
+    drawStartScreen(); // display start screen if animation has not started
   else {
     if(morning){
-      if(setting){background(#090028);} // deep purple background
-      else{background(#7ec0ee);} // sky blue background
+      if(setting) {
+        background(#090028); // deep purple background
+        cloudColor = 100; // dark gray cloud
+      } 
+      else {
+        background(#7ec0ee); // sky blue background
+        cloudColor = 255; // white cloud
+      } 
     }
     else{
-      if(setting){background(#7ec0ee);}
-      else{background(#090028);}
+      if(setting) {
+        background(#7ec0ee);
+        cloudColor = 255;
+      }
+      else { 
+        background(#090028);
+        cloudColor = 100;
+      }
     }
     if(!setting && !morning || morning && setting){
       nightSky();
     }
     drawSunOrMoon();
+    drawCloud();
     if(kiteColor == "ffffffff"){stroke(0);}
     else{stroke(unhex(kiteColor));}
     drawKite();
@@ -166,6 +182,18 @@ void drawKiteTail() {
     kiteTailAnimReverse = true; // set to true to reverse the animation
     kiteTailAnim -= 1;
   }
+}
+
+void drawCloud() {
+  stroke(cloudColor); // change cloud color depending on time of day
+  fill(cloudColor);
+  ellipse(cloudXPos, cloudYPos, 30, 30);
+  ellipse(cloudXPos+20, cloudYPos, 45, 40);
+  ellipse(cloudXPos+38, cloudYPos, 35, 25);
+  noFill();
+  cloudXPos += 2;
+  if(cloudXPos > 570)  // when cloud moves off screen,
+    cloudXPos = -70;   // reset position
 }
 
 void drawSunOrMoon(){
@@ -305,11 +333,11 @@ void mousePressed() {
 }
 
 void drawStartScreen() {
-  background(255);
+  background(150);
   textFont(font);
   textAlign(CENTER);
   fill(0);
-  text("Interactive Kite Animation", width/2, 150);
+  text("Interactive Kite Animation", width/2, 150); // width/2 = place in horizontal center
   text("Press 'S' to start", width/2, 420);
   
   textFont(smallFont);
