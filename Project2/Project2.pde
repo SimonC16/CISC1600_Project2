@@ -39,12 +39,12 @@ void draw() {
     drawStartScreen();
   else {
     if(morning){
-      if(setting){background(0);}
-      else{background(255);}// white background
+      if(setting){background(#090028);} // deep purple background
+      else{background(#7ec0ee);} // sky blue background
     }
     else{
-      if(setting){background(255);}
-      else{background(0);}
+      if(setting){background(#7ec0ee);}
+      else{background(#090028);}
     }
     if(!setting && !morning || morning && setting){
       nightSky();
@@ -225,13 +225,16 @@ void animateSunOrMoon(int g){
     ellipse(x, y, 50, 50);
   }
 }
+
 void nightSky(){
   if(starAnimation==0){starAnimation++;}
   else{
-    starAnimation--;
-    for(int i = 0; i < 20; i++){
-      placementX[i] = random(0,500);
-      placementY[i] = random(0,500);
+    if(frameCount % 15 == 0) { // slow down drawing of stars
+      starAnimation--;
+      for(int i = 0; i < 20; i++){
+        placementX[i] = random(0,500);
+        placementY[i] = random(0,500);
+      }
     }
   }
   for(int i = 0; i < 20; i++){
