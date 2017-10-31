@@ -8,6 +8,17 @@ int xPos = 300, yPos = 200; // kite coordinates
 int kiteTailAnim = 0;
 boolean startAnim = false, kiteTailAnimReverse;
 String kiteColor = "ffffffff";
+boolean morning = true;
+boolean animateSunOrMoon = false;
+boolean rising = false;
+boolean setting = false;
+PVector center, point;
+float angle;
+float radius;
+float x, y;
+float[] placementX = new float[20];
+float[] placementY = new float[20];
+int starAnimation = 1;
 
 PFont font, smallFont;
 
@@ -17,13 +28,30 @@ void setup() {
   String[] fontList = PFont.list();
   font = createFont(fontList[0], 50);
   smallFont = createFont(fontList[0], 25);
+  center = new PVector(500,500);
+  point = new PVector(25,525);
+  //find the angle between the points
+  radius = dist(center.x, center.y, point.x, point.y);
 }
 
 void draw() {
   if(!startAnim)
     drawStartScreen();
   else {
-    background(255); // white background
+    if(morning){
+      if(setting){background(0);}
+      else{background(255);}// white background
+    }
+    else{
+      if(setting){background(255);}
+      else{background(0);}
+    }
+    if(!setting && !morning || morning && setting){
+      nightSky();
+    }
+    drawSunOrMoon();
+    if(kiteColor == "ffffffff"){stroke(0);}
+    else{stroke(unhex(kiteColor));}
     drawKite();
     drawKiteTail();
   }
@@ -136,6 +164,98 @@ void drawKiteTail() {
   }
 }
 
+void drawSunOrMoon(){
+  if(morning){
+    if(setting){
+      stroke(255,255,255);
+      animateSunOrMoon(255);
+    }
+    else{
+      stroke(255,255,0);
+      animateSunOrMoon(0);
+    }
+  }
+  else{
+    if(setting){
+      stroke(255,255,0);
+      animateSunOrMoon(0);
+    }
+    else{
+      stroke(255,255,255);
+      animateSunOrMoon(255);
+    }
+  }
+}
+void animateSunOrMoon(int g){
+  if(animateSunOrMoon){
+    if(rising){
+      setting = false;
+      if(angle>=1.375*PI){
+        animateSunOrMoon = false;
+        angle = 1.375*PI;
+        rising = false;
+      }
+    }
+    else{
+      if(angle>1.6*PI){
+        float deltaX = center.x - point.x;
+        float deltaY = center.y - point.y;
+        angle = atan2(deltaX, deltaY);
+        rising = true;
+      }
+    }
+    //find the point based on the angle
+    x = center.x + cos(angle)*radius;
+    y = center.y + sin(angle)*radius;
+    fill(255,255,g);
+    ellipse(x, y, 50, 50);
+
+    //increment the angle to move the point
+    angle += PI/180;
+  }
+  else{
+    angle = 1.375*PI;
+    x = center.x + cos(angle)*radius;
+    y = center.y + sin(angle)*radius;
+    fill(255,255,g);
+    ellipse(x, y, 50, 50);
+  }
+}
+void nightSky(){
+  if(starAnimation==0){starAnimation++;}
+  else{
+    starAnimation--;
+    for(int i = 0; i < 20; i++){
+      placementX[i] = random(0,500);
+      placementY[i] = random(0,500);
+    }
+  }
+  for(int i = 0; i < 20; i++){
+    if(starAnimation == 0){
+      star(placementX[i],placementY[i],5,10,5);
+    }
+    else{
+      star(placementX[i],placementY[i],5,10,40);
+    }
+  }
+}
+
+void star(float x, float y, float radius1, float radius2, int npoints) {
+  float angle = TWO_PI / npoints;
+  float halfAngle = angle/2.0;
+  fill(255,255,0);
+  stroke(255,255,0);
+  beginShape();
+  for (float a = 0; a < TWO_PI; a += angle) {
+    float sx = x + cos(a) * radius2;
+    float sy = y + sin(a) * radius2;
+    vertex(sx, sy);
+    sx = x + cos(a+halfAngle) * radius1;
+    sy = y + sin(a+halfAngle) * radius1;
+    vertex(sx, sy);
+  }
+  endShape(CLOSE);
+}
 void keyPressed() {
   // kite movement keys
   if(keyCode == UP)
@@ -158,6 +278,22 @@ void keyPressed() {
   // navigate away from start screen
   if(key == 'S' || key == 's')
     startAnim = true;
+}
+
+void mousePressed() {
+  if(!startAnim){return;}
+  if(morning){
+    morning = false;
+    setting = true;
+    rising = false;
+    animateSunOrMoon = true;
+  }
+  else{
+    morning = true;
+    setting = true;
+    rising = false;
+    animateSunOrMoon = true;
+  }
 }
 
 void drawStartScreen() {
