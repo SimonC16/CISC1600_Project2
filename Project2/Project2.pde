@@ -257,7 +257,8 @@ void animateSunOrMoon(int g){
 void nightSky(){
   if(starAnimation==0){starAnimation++;}
   else{
-    if(frameCount % 15 == 0) { // slow down drawing of stars
+    if(frameCount % 15 == 0) {  // control frequency of new stars
+                                // lower divisor = higher frequency
       starAnimation--;
       for(int i = 0; i < 20; i++){
         placementX[i] = random(0,500);
