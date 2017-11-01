@@ -11,16 +11,16 @@ int kiteTailAnim = 0; // frame # the kite tail animation is on
 boolean startAnim = false, kiteTailAnimReverse;
 String kiteColor = "ffffffff";  // kite color, stored in string to easily change value
                                 // can be converted using unhex() and used in stroke(), fill(), etc
-boolean morning = true;
-boolean animateSunOrMoon = false;
-boolean rising = false;
-boolean setting = false;
-PVector center, point;
-float angle;
-float radius;
-float x, y;
-float[] placementX = new float[20];
-float[] placementY = new float[20];
+boolean morning = true; //Is it morning or night?
+boolean animateSunOrMoon = false; //Are you changing the time of the day?
+boolean rising = false; //Is the Sun/Moon rising?
+boolean setting = false; //Is the Sun/Moon setting?
+PVector center, point; //Center of path and Center of Sun/Moon
+float angle; //Current angle of Sun/Moon relative to the center
+float radius; // distance from rotational center to Sun/Moon
+float x, y; // position of Sun or Moon
+float[] placementX = new float[20]; //placement of stars x-axis
+float[] placementY = new float[20]; //placement of stars y-axis
 int starAnimation = 1;
 
 PFont font, smallFont;
@@ -36,7 +36,10 @@ void setup() {
   //find the angle between the points
   radius = dist(center.x, center.y, point.x, point.y);
 }
-
+/**
+  Main loop:
+  Show Main screen and animate Kite Simulation when promped.
+**/
 void draw() {
   if(!startAnim)
     drawStartScreen(); // display start screen if animation has not started
@@ -61,6 +64,14 @@ void draw() {
         cloudColor = 100;
       }
     }
+    /*
+      From lower level to topmost level:
+      1. Stars
+      2. Sun/Moon
+      3. Clouds
+      4. Kite
+    */
+    // Display the Night sky when the Moon is up
     if(!setting && !morning || morning && setting){
       nightSky();
     }
@@ -195,7 +206,9 @@ void drawCloud() {
   if(cloudXPos > 570)  // when cloud moves off screen,
     cloudXPos = -70;   // reset position
 }
-
+/*
+  Decides whether the Sun or the Moon is drawn
+*/
 void drawSunOrMoon(){
   if(morning){
     if(setting){
@@ -218,6 +231,9 @@ void drawSunOrMoon(){
     }
   }
 }
+/*
+  If it is changing from Night to Day or vice versa, make the sun/moon set and rise.
+*/
 void animateSunOrMoon(int g){
   if(animateSunOrMoon){
     if(rising){
@@ -253,7 +269,10 @@ void animateSunOrMoon(int g){
     ellipse(x, y, 50, 50);
   }
 }
-
+/*
+  Calls stars to create stars while it sets the positions
+  -- To emulate shining shape chages between having more or less nodes.
+*/
 void nightSky(){
   if(starAnimation==0){starAnimation++;}
   else{
@@ -275,7 +294,9 @@ void nightSky(){
     }
   }
 }
-
+/*
+  Create star shapes
+*/
 void star(float x, float y, float radius1, float radius2, int npoints) {
   float angle = TWO_PI / npoints;
   float halfAngle = angle/2.0;
@@ -316,7 +337,10 @@ void keyPressed() {
   if(key == 'S' || key == 's')
     startAnim = true; // s for start
 }
-
+/*
+  **Only when out of Start Screen does it listen**
+  Changes between morning and night.
+*/
 void mousePressed() {
   if(!startAnim){return;}
   if(morning){
